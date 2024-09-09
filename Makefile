@@ -25,3 +25,12 @@ $(OBJ) : $(OUT_O_DIR)/%.o : $(SRCDIR)/%.cpp
 .PHONY: clean
 clean:
 	@rm -rf $(OBJ) $(OUT_O_DIR)/*.x
+
+TESTFILES=$(wildcard $(TESTS)/*.dat)
+
+.PHONY: testrun
+testrun: $(TESTFILES)
+
+.PHONY: $(TESTFILES)
+$(TESTFILES): $(OUT_O_DIR)/$(OUT)
+	@$(ROOT_DIR)/runtest.sh $@ $(OUT_O_DIR)/$(OUT)
