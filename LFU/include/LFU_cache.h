@@ -12,11 +12,9 @@
 
         using MapIt = typename std::multimap<unsigned int, KeyT>::iterator;
         struct map_entry_t {
-            explicit map_entry_t(unsigned int freq, T entry, MapIt map_it) :
-                                freq_(freq), entry_(entry), map_it_(map_it) {}
-            unsigned int freq_ = 0;
-            T entry_;
-            MapIt map_it_;
+            unsigned int freq = 0;
+            T entry;
+            MapIt map_it;
         };
         std::unordered_map<KeyT, map_entry_t> hash_;
 
@@ -25,7 +23,7 @@
 
         bool full() const {return hash_.size() == sz_;}
 
-        template <typename F> bool lookup_update(const KeyT & key, F slow_get_page) 
+        template <typename F> bool lookup_update(const KeyT &key, F slow_get_page) 
         {
             auto hit = hash_.find(key);
             if (hit == hash_.end())
@@ -40,10 +38,10 @@
                 return false; // First page call.
             }
 
-            map_entry_t & elt = hit->second;
-            freqs_.erase(elt.map_it_);
-            elt.freq_ += 1;
-            elt.map_it_ = freqs_.emplace(elt.freq_, key);
+            map_entry_t &elt = hit->second;
+            freqs_.erase(elt.map_it);
+            elt.freq += 1;
+            elt.map_it = freqs_.emplace(elt.freq, key);
             return true;
         }
     };

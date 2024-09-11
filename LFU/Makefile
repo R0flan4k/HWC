@@ -1,5 +1,5 @@
-CXX = g++
-CXXFLAGS ?= -O2 -std=c++2a
+CXX = g++-10
+CXXFLAGS ?= -O2 -std=c++20
 OUT_O_DIR ?= obj
 IFLAGS = -I./include
 TESTS = ./tests

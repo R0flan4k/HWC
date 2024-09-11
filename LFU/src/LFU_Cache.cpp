@@ -3,7 +3,7 @@
 
 #include "LFU_cache.h"
 
-std::_Identity<int> slow_get_page;
+std::identity slow_get_page;
 
 int main()
 {
@@ -13,7 +13,7 @@ int main()
     std::cin >> cache_size >> n;
     if (!std::cin.good())
     {
-        std::cout << "Input error: cache size." << std::endl;
+        std::cerr << "Input error: cache size." << std::endl;
         return 1;
     }
 
@@ -26,7 +26,7 @@ int main()
         std::cin >> q;
         if (!std::cin.good())
         {
-            std::cout << "Input error: data N" << i << "." << std::endl;;
+            std::cerr << "Input error: data N " << i << "." << std::endl;
             return 1;
         }
         hits += lfu.lookup_update(q, slow_get_page);

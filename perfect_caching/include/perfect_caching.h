@@ -3,6 +3,7 @@
 
     #include <map>
     #include <unordered_map>
+    #include <cassert>
 
     namespace caches {
 
@@ -41,11 +42,9 @@
 
         using MapIt = typename std::multimap<unsigned int, KeyT>::iterator;
         struct map_entry_t {
-            explicit map_entry_t(unsigned int freq, T entry, MapIt map_it) :
-                                freq_(freq), entry_(entry), map_it_(map_it) {}
-            unsigned int freq_ = 0;
-            T entry_;
-            MapIt map_it_;
+            unsigned int freq = 0;
+            T entry;
+            MapIt map_it;
         };
         std::unordered_map<KeyT, map_entry_t> hash_;
 
@@ -53,7 +52,7 @@
         bool full() const {return hash_.size() == sz_;}
 
     private:
-        template <typename F> bool caches_update(const KeyT & key, const unsigned int freq,
+        template <typename F> bool caches_update(const KeyT &key, const unsigned int freq,
                                                  F slow_get_page)
         {
             auto hit = hash_.find(key);
@@ -70,13 +69,18 @@
             }
 
             // Expect frequency of page calculated beforehand.
+            map_entry_t &elt = hit->second;
+            abs_freqs_.erase(elt.map_it);
+            elt.freq -= 1;
+            assert(elt.freq >= 0);
+            elt.map_it = abs_freqs_.emplace(elt.freq, key);
             return true;
         }
 
     public:
         explicit perfect_cache_t(size_t sz) : sz_(sz) {};
 
-        template <typename F> int calculate_hits(const page_calls_list_t<KeyT> & calls,
+        template <typename F> int calculate_hits(const page_calls_list_t<KeyT> &calls,
                                                  F slow_get_page)
         {
             auto lst_it = calls.pages_.begin();

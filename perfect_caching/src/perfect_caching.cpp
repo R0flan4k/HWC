@@ -3,7 +3,7 @@
 
 #include "perfect_caching.h"
 
-std::_Identity<int> slow_get_page;
+std::identity slow_get_page;
 
 int main()
 {
@@ -12,7 +12,7 @@ int main()
     std::cin >> cache_size >> n;
     if (!std::cin.good())
     {
-        std::cout << "Input error: cache size." << std::endl;
+        std::cerr << "Input error: cache size." << std::endl;
         return 1;
     }
 
