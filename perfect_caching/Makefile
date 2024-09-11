@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS ?= -O2
+CXXFLAGS ?= -O2 -std=c++2a
 OUT_O_DIR ?= obj
 IFLAGS = -I./include
 TESTS = ./tests
@@ -8,9 +8,9 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 override CXXFLAGS += $(IFLAGS)
 
-SRC := LFU_Cache.cpp
+SRC := perfect_caching.cpp
 OBJ := $(addprefix $(OUT_O_DIR)/,$(SRC:.cpp=.o))
-OUT := HWC.x 
+OUT := PC.x 
 
 .PHONY: all
 all: $(OUT_O_DIR)/$(OUT)
