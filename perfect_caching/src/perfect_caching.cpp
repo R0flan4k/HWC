@@ -1,9 +1,8 @@
 #include <list>
 #include <iostream>
+#include <iterator>
 
 #include "perfect_caching.h"
-
-std::identity slow_get_page;
 
 int main()
 {
@@ -16,9 +15,9 @@ int main()
         return 1;
     }
 
-    caches::perfect_cache_t<int, int> pc{cache_size};
-    caches::page_calls_list_t<int> calls{n};
-    std::cout << pc.calculate_hits(calls, slow_get_page) << std::endl;
+    caches::perfect_cache_t<int, int, std::identity> pc{cache_size, std::identity{}};
+    caches::page_calls_list_t<int> calls{n, std::istream_iterator<int>(std::cin), std::istream_iterator<int>()};
+    std::cout << pc.calculate_hits(calls) << std::endl;
     
     return 0;
 }

@@ -6,24 +6,27 @@
 
     namespace caches {
 
-    template <typename T, typename KeyT> class lfu_t {
+    template <typename T, typename KeyT, typename PageCallT> class lfu_t {
         size_t sz_;
-        std::multimap<unsigned int, KeyT> freqs_;
+        std::multimap<int, KeyT> freqs_;
 
-        using MapIt = typename std::multimap<unsigned int, KeyT>::iterator;
+        using MapIt = typename std::multimap<int, KeyT>::iterator;
         struct map_entry_t {
-            unsigned int freq = 0;
+            int freq = 0;
             T entry;
             MapIt map_it;
         };
         std::unordered_map<KeyT, map_entry_t> hash_;
 
+        PageCallT slow_get_page_;
+
     public:
-        explicit lfu_t(size_t sz) : sz_(sz) {}
+        explicit lfu_t(size_t sz, PageCallT slow_get_page) 
+        : sz_(sz), slow_get_page_(slow_get_page) {}
 
         bool full() const {return hash_.size() == sz_;}
 
-        template <typename F> bool lookup_update(const KeyT &key, F slow_get_page) 
+        bool lookup_update(const KeyT &key) 
         {
             auto hit = hash_.find(key);
             if (hit == hash_.end())
@@ -34,7 +37,7 @@
                     freqs_.erase(freqs_.begin());
                 }
 
-                hash_.try_emplace(key, 1, slow_get_page(key), freqs_.emplace(1, key)); 
+                hash_.try_emplace(key, 1, slow_get_page_(key), freqs_.emplace(1, key)); 
                 return false; // First page call.
             }
 
