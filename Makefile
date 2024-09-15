@@ -9,6 +9,13 @@ all:
 	@$(MAKE) $(MAKEFLAGS) -C $(ROOT_DIR)/LFU
 	@$(MAKE) $(MAKEFLAGS) -C $(ROOT_DIR)/perfect_caching
 
+testrun: all
+	@echo LFU:
+	@$(MAKE) $(MAKEFLAGS) -C $(ROOT_DIR)/LFU testrun
+	@echo 
+	@echo Perfect:
+	@$(MAKE) $(MAKEFLAGS) -C $(ROOT_DIR)/perfect_caching testrun
+
 clean: $(DIRS)
 
 $(DIRS): $(OBJ)
