@@ -3,6 +3,7 @@
 
     #include <map>
     #include <unordered_map>
+    #include <cassert>
 
     namespace caches {
 
@@ -10,7 +11,7 @@
         size_t sz_;
     
     public:
-        std::unordered_map<KeyT, unsigned> freqs_map_;
+        std::unordered_map<KeyT, int> freqs_map_;
         std::list<KeyT> pages_;
 
         size_t size() const {return sz_;}
@@ -39,12 +40,12 @@
 
     template <typename T, typename KeyT, typename PageCallT> class perfect_cache_t {
         size_t sz_;
-        std::multimap<unsigned, KeyT> abs_freqs_;
+        std::multimap<int, KeyT> abs_freqs_;
 
-        using MapIt = typename std::multimap<unsigned, KeyT>::iterator;
+        using MapIt = typename std::multimap<int, KeyT>::iterator;
         struct map_entry_t {
             MapIt map_it;
-            unsigned freq = 0;
+            int freq = 0;
             T entry;
         };
         std::unordered_map<KeyT, map_entry_t> hash_;
@@ -55,7 +56,7 @@
         bool full() const {return hash_.size() == sz_;}
 
     private:
-        bool caches_update(const KeyT &key, const unsigned freq)
+        bool caches_update(const KeyT &key, const int freq)
         {
             auto hit = hash_.find(key);
             if (hit == hash_.end())
@@ -74,6 +75,7 @@
             map_entry_t &elt = hit->second;
             abs_freqs_.erase(elt.map_it);
             elt.freq -= 1;
+            assert(elt.freq >= 0);
             elt.map_it = abs_freqs_.emplace(elt.freq, key);
             return true;
         }
