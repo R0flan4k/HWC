@@ -1,6 +1,6 @@
-#include <list>
 #include <iostream>
 #include <iterator>
+#include <functional>
 
 #include "perfect_caching.h"
 
