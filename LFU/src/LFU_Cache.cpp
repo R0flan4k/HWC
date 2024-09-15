@@ -15,7 +15,7 @@ int main()
         return 1;
     }
 
-    caches::lfu_t<int, int, std::identity> lfu{cache_size, std::identity{}};
+    caches::lfu_t<int, int> lfu{cache_size, std::identity{}};
     int hits = 0;
 
     for (int i = 0; i < n; i++)

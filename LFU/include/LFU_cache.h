@@ -21,7 +21,7 @@
         PageCallT slow_get_page_;
 
     public:
-        explicit lfu_t(size_t sz, PageCallT slow_get_page) 
+        template <typename PageCallF> explicit lfu_t(size_t sz, PageCallF slow_get_page) 
         : sz_(sz), slow_get_page_(slow_get_page) {}
 
         bool full() const {return hash_.size() == sz_;}

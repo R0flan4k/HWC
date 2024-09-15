@@ -15,7 +15,7 @@ int main()
         return 1;
     }
 
-    caches::perfect_cache_t<int, int, std::identity> pc{cache_size, std::identity{}};
+    caches::perfect_cache_t<int, int> pc{cache_size, std::identity{}};
     caches::page_calls_list_t<int> calls{n, std::istream_iterator<int>(std::cin), std::istream_iterator<int>()};
     std::cout << pc.calculate_hits(calls) << std::endl;
     

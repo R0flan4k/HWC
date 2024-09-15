@@ -79,7 +79,7 @@
         }
 
     public:
-        explicit perfect_cache_t(size_t sz, PageCallT slow_get_page) 
+        template <typename PageCallF> explicit perfect_cache_t(size_t sz, PageCallF slow_get_page) 
         : sz_(sz), slow_get_page_(slow_get_page) {}
 
         int calculate_hits(const page_calls_list_t<KeyT> &calls)
