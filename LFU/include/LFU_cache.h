@@ -8,13 +8,13 @@
 
     template <typename T, typename KeyT, typename PageCallT> class lfu_t {
         size_t sz_;
-        std::multimap<int, KeyT> freqs_;
+        std::multimap<unsigned, KeyT> freqs_;
 
-        using MapIt = typename std::multimap<int, KeyT>::iterator;
+        using MapIt = typename std::multimap<unsigned, KeyT>::iterator;
         struct map_entry_t {
-            int freq = 0;
+	        MapIt map_it;
+            unsigned freq = 0;
             T entry;
-            MapIt map_it;
         };
         std::unordered_map<KeyT, map_entry_t> hash_;
 
@@ -37,7 +37,7 @@
                     freqs_.erase(freqs_.begin());
                 }
 
-                hash_.try_emplace(key, 1, slow_get_page_(key), freqs_.emplace(1, key)); 
+                hash_.try_emplace(key, freqs_.emplace(1, key), 1, slow_get_page_(key)); 
                 return false; // First page call.
             }
 
