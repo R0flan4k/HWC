@@ -1,5 +1,5 @@
 # rm -rf build
-# cmake -S . -B build
+# cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10
 # cmake --build ./build
 
 # To run LFU cache tests:
@@ -10,7 +10,7 @@
 cmake_minimum_required(VERSION 3.11)
 project(HWC)
 set(CMAKE_CXX_FLAGS "-O2 -std=c++20")
-set(CMAKE_CXX_COMPILER "g++-10")
+
 
 set(LC_SRCS
 	${CMAKE_SOURCE_DIR}/LFU/src/LFU_Cache.cpp
