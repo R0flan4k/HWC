@@ -11,7 +11,6 @@ cmake_minimum_required(VERSION 3.11)
 project(HWC)
 set(CMAKE_CXX_FLAGS "-O2 -std=c++20")
 
-
 set(LC_SRCS
 	${CMAKE_SOURCE_DIR}/LFU/src/LFU_Cache.cpp
 )
