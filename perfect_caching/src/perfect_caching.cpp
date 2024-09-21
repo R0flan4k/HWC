@@ -1,8 +1,8 @@
+#include "perfect_caching.h"
+
 #include <iostream>
 #include <iterator>
 #include <functional>
-
-#include "perfect_caching.h"
 
 int main()
 {

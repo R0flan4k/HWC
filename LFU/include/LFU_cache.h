@@ -6,7 +6,7 @@
 
     namespace caches {
 
-    template <typename T, typename KeyT, typename PageCallT> class lfu_t {
+    template <typename KeyT, typename T, typename PageCallT> class lfu_t {
         size_t sz_;
         std::multimap<unsigned, KeyT> freqs_;
 

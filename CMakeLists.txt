@@ -1,5 +1,5 @@
 # rm -rf build
-# cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10
+# cmake -S . -B build -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_BUILD_TYPE=Release
 # cmake --build ./build
 
 # To run LFU cache tests:
@@ -9,7 +9,6 @@
 
 cmake_minimum_required(VERSION 3.11)
 project(HWC)
-set(CMAKE_CXX_FLAGS "-O2 -std=c++20")
 
 set(LC_SRCS
 	${CMAKE_SOURCE_DIR}/LFU/src/LFU_Cache.cpp
@@ -22,12 +21,14 @@ add_executable(PC.x) # Perfect cache.
 
 target_sources(LC.x PRIVATE ${LC_SRCS})
 target_include_directories(LC.x PUBLIC "${CMAKE_SOURCE_DIR}/LFU/include")
+target_compile_features(LC.x PUBLIC cxx_std_20)
+
 target_sources(PC.x PRIVATE ${PC_SRCS})
 target_include_directories(PC.x PUBLIC "${CMAKE_SOURCE_DIR}/perfect_caching/include")
+target_compile_features(PC.x PUBLIC cxx_std_20)
 
 enable_testing()
 set(LC_TESTS "${CMAKE_SOURCE_DIR}/LCTests")
-
 
 file(GLOB testfiles "${LC_TESTS}/*.dat")
 foreach(file ${testfiles})

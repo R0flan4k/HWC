@@ -1,8 +1,8 @@
+#include "LFU_cache.h"
+
 #include <iostream>
 #include <cassert>
 #include <functional>
-
-#include "LFU_cache.h"
 
 int main()
 {

@@ -3,7 +3,7 @@
 
     #include <map>
     #include <unordered_map>
-    #include <deque>
+    #include <vector>
     #include <cassert>
 
     namespace caches {
@@ -12,8 +12,8 @@
         size_t sz_;
     
     public:
-        std::unordered_map<KeyT, std::deque<unsigned>> calls_map;
-        std::deque<KeyT> pages;
+        std::unordered_map<KeyT, std::vector<unsigned>> calls_map;
+        std::vector<KeyT> pages;
 
         size_t size() const {return sz_;}
 
@@ -43,7 +43,7 @@
         }
     };
 
-    template <typename T, typename KeyT, typename PageCallT> class perfect_cache_t {
+    template <typename KeyT, typename T, typename PageCallT> class perfect_cache_t {
         size_t sz_;
         std::map<unsigned, KeyT, std::greater<unsigned>> call_id_;
 
@@ -68,8 +68,11 @@
 
             auto hit = hash_.find(key);
             auto &call_list = calls.find(key)->second;
+            assert(calls.find(key) != calls.end());
+            assert(!call_list.empty());
+
             unsigned next_call = *(call_list.begin());  // Expect that we can see a future
-            call_list.pop_front();                      // so calls.find() is always found.
+            call_list.erase(call_list.begin());         // so calls.find() is always found.
 
             if (hit == hash_.end())
             {   
@@ -114,4 +117,4 @@
     };
     } // namespace caches
 
-#endif // PERFECT_CACHING_H
+#endif // PERFECT_CACHING_H 
