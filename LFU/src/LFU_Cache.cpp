@@ -7,7 +7,7 @@
 int main()
 {
     size_t cache_size;
-    int n;
+    size_t n;
 
     std::cin >> cache_size >> n;
     if (!std::cin.good())
@@ -19,7 +19,7 @@ int main()
     caches::lfu_t<int, int, std::identity> lfu{cache_size, std::identity{}};
     int hits = 0;
 
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
     {
         int q;
         std::cin >> q;

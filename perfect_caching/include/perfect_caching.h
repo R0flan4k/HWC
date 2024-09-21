@@ -3,7 +3,8 @@
 
     #include <map>
     #include <unordered_map>
-    #include <list>
+    #include <deque>
+    #include <cassert>
 
     namespace caches {
 
@@ -11,8 +12,8 @@
         size_t sz_;
     
     public:
-        std::unordered_map<KeyT, std::list<unsigned>> calls_map;
-        std::list<KeyT> pages;
+        std::unordered_map<KeyT, std::deque<unsigned>> calls_map;
+        std::deque<KeyT> pages;
 
         size_t size() const {return sz_;}
 
@@ -28,7 +29,7 @@
                 auto hit = calls_map.find(cur_key);
                 if (hit == calls_map.end())
                 {
-                    calls_map.emplace(cur_key, 0);
+                    calls_map.try_emplace(cur_key);
                 }
                 else
                 {
@@ -44,9 +45,9 @@
 
     template <typename T, typename KeyT, typename PageCallT> class perfect_cache_t {
         size_t sz_;
-        std::multimap<unsigned, KeyT, std::greater<unsigned>> call_id_; ///////
+        std::map<unsigned, KeyT, std::greater<unsigned>> call_id_;
 
-        using MapIt = typename std::multimap<unsigned, KeyT, std::greater<unsigned>>::iterator;
+        using MapIt = typename std::map<unsigned, KeyT, std::greater<unsigned>>::iterator;
         struct map_entry_t {
             MapIt map_it;
             unsigned next_call_id = 0;
@@ -62,29 +63,33 @@
     private:
         template <class CallsMapT> bool caches_update(const KeyT &key, CallsMapT &calls)
         {
+            assert(!calls.empty());
+            assert(calls.find(key) != calls.end());
+
             auto hit = hash_.find(key);
             auto &call_list = calls.find(key)->second;
             unsigned next_call = *(call_list.begin());  // Expect that we can see a future
-            call_list.pop_front();                      // so calls.find() is always founded.
+            call_list.pop_front();                      // so calls.find() is always found.
 
             if (hit == hash_.end())
-            {
-                if (full() && next_call < (call_id_.begin())->first)
+            {   
+                if (full())
                 {
-                    hash_.erase(call_id_.begin()->second);
-                    call_id_.erase(call_id_.begin());
-                    hash_.try_emplace(key, call_id_.emplace(next_call, key), next_call, slow_get_page_(key));
+                    if (next_call < (call_id_.begin())->first)
+                    {
+                        hash_.erase(call_id_.begin()->second);
+                        call_id_.erase(call_id_.begin());
+                    }
+                    else 
+                        return false;
                 }
-                else if (!full())
-                {
-                    hash_.try_emplace(key, call_id_.emplace(next_call, key), next_call, slow_get_page_(key));
-                }
+                hash_.try_emplace(key, call_id_.emplace(next_call, key).first, next_call, slow_get_page_(key));
                 return false;
             }
 
             map_entry_t &elt = hit->second;
             call_id_.erase(elt.map_it);
-            elt.map_it = call_id_.emplace(next_call, key);
+            elt.map_it = call_id_.emplace(next_call, key).first;
             elt.next_call_id  = next_call;
             return true;
         }
@@ -100,7 +105,7 @@
             int hits = 0;
             for (size_t i = 0; i < calls.size(); i++)
             {
-                hits += caches_update(*lst_it, calls.calls_map/*.find(*lst_it)->second*/);
+                hits += caches_update(*lst_it, calls.calls_map);
                 lst_it++;
             }
 
