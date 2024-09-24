@@ -10,11 +10,10 @@
 
     template <typename KeyT> class page_calls_list_t {
         size_t sz_;
+        std::unordered_map<KeyT, std::vector<unsigned>> calls_map_;
+        std::vector<KeyT> pages_;
     
     public:
-        std::unordered_map<KeyT, std::vector<unsigned>> calls_map;
-        std::vector<KeyT> pages;
-
         size_t size() const {return sz_;}
 
         template <class RandomIt> explicit page_calls_list_t(size_t sz,
@@ -24,12 +23,12 @@
             for (; first != last; first++)
             {
                 KeyT cur_key = *first;
-                pages.push_back(cur_key);
+                pages_.push_back(cur_key);
 
-                auto hit = calls_map.find(cur_key);
-                if (hit == calls_map.end())
+                auto hit = calls_map_.find(cur_key);
+                if (hit == calls_map_.end())
                 {
-                    calls_map.try_emplace(cur_key);
+                    calls_map_.try_emplace(cur_key);
                 }
                 else
                 {
@@ -38,9 +37,12 @@
                 sz--;
             }
 
-            for (auto map_it = calls_map.begin(); map_it != calls_map.end(); map_it++)
+            for (auto map_it = calls_map_.begin(); map_it != calls_map_.end(); map_it++)
                 map_it->second.push_back(sz_);
         }
+
+        const std::vector<KeyT>& pages() const {return pages_;}
+        std::unordered_map<KeyT, std::vector<unsigned>>& calls_map() {return calls_map_;}
     };
 
     template <typename KeyT, typename T, typename PageCallT> class perfect_cache_t {
@@ -103,12 +105,12 @@
 
         int calculate_hits(page_calls_list_t<KeyT> &calls)
         {
-            auto lst_it = calls.pages.begin();
+            auto lst_it = calls.pages().begin();
 
             int hits = 0;
             for (size_t i = 0; i < calls.size(); i++)
             {
-                hits += caches_update(*lst_it, calls.calls_map);
+                hits += caches_update(*lst_it, calls.calls_map());
                 lst_it++;
             }
 
