@@ -65,16 +65,17 @@
     private:
         template <class CallsMapT> bool caches_update(const KeyT &key, CallsMapT &calls)
         {
+            auto cur_call = calls.find(key);
             assert(!calls.empty());
-            assert(calls.find(key) != calls.end());
+            assert(cur_call != calls.end());
 
             auto hit = hash_.find(key);
-            auto &call_list = calls.find(key)->second;
-            assert(calls.find(key) != calls.end());
+            auto &call_list = cur_call->second;
             assert(!call_list.empty());
 
-            unsigned next_call = *(call_list.begin());  // Expect that we can see a future
-            call_list.erase(call_list.begin());         // so calls.find() is always found.
+            auto next_call_it  = call_list.begin();
+            unsigned next_call = *next_call_it;      
+            call_list.erase(next_call_it);     
 
             if (hit == hash_.end())
             {   
