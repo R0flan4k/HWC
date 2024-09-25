@@ -41,8 +41,24 @@
                 map_it->second.push_back(sz_);
         }
 
+        unsigned call_list_pop_front(KeyT key) 
+        {
+            assert(!calls_map_.empty());
+            auto cur_call = calls_map_.find(key);
+            assert(cur_call != calls_map_.end());
+
+            auto &call_list = cur_call->second;
+            assert(!call_list.empty());
+
+            auto next_call_it  = call_list.begin();
+            assert(next_call_it != call_list.end());
+            unsigned next_call = *next_call_it;
+            call_list.erase(next_call_it); 
+            return next_call;
+        }
+
         const std::vector<KeyT>& pages() const {return pages_;}
-        std::unordered_map<KeyT, std::vector<unsigned>>& calls_map() {return calls_map_;}
+        const std::unordered_map<KeyT, std::vector<unsigned>>& calls_map() const {return calls_map_;}
     };
 
     template <typename KeyT, typename T, typename PageCallT> class perfect_cache_t {
@@ -63,25 +79,18 @@
         bool full() const {return hash_.size() == sz_;}
 
     private:
-        template <class CallsMapT> bool caches_update(const KeyT &key, CallsMapT &calls)
+        template <class CallsListT> bool caches_update(const KeyT &key, CallsListT &calls)    
         {
-            auto cur_call = calls.find(key);
-            assert(!calls.empty());
-            assert(cur_call != calls.end());
-
-            auto hit = hash_.find(key);
-            auto &call_list = cur_call->second;
-            assert(!call_list.empty());
-
-            auto next_call_it  = call_list.begin();
-            unsigned next_call = *next_call_it;      
-            call_list.erase(next_call_it);     
+            auto hit = hash_.find(key);    
+            unsigned next_call = calls.call_list_pop_front(key);      
 
             if (hit == hash_.end())
             {   
                 if (full())
                 {
-                    if (next_call < (call_id_.begin())->first)
+                    auto further_incache_it = call_id_.begin();
+                    assert(further_incache_it != call_id_.end());
+                    if (next_call < further_incache_it->first)
                     {
                         hash_.erase(call_id_.begin()->second);
                         call_id_.erase(call_id_.begin());
@@ -111,7 +120,7 @@
             int hits = 0;
             for (size_t i = 0; i < calls.size(); i++)
             {
-                hits += caches_update(*lst_it, calls.calls_map());
+                hits += caches_update(*lst_it, calls);
                 lst_it++;
             }
 
