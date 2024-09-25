@@ -20,7 +20,7 @@
                                                              RandomIt first, RandomIt last)
         : sz_(sz)
         {
-            for (; first != last; first++)
+            for (; first != last; ++first)
             {
                 KeyT cur_key = *first;
                 pages_.push_back(cur_key);
@@ -118,10 +118,9 @@
             auto lst_it = calls.pages().begin();
 
             int hits = 0;
-            for (size_t i = 0; i < calls.size(); i++)
+            for (size_t i = 0; i < calls.size(); i++, ++lst_it)
             {
                 hits += caches_update(*lst_it, calls);
-                lst_it++;
             }
 
             return hits;
