@@ -16,8 +16,8 @@
     public:
         size_t size() const {return sz_;}
 
-        template <class RandomIt> explicit page_calls_list_t(size_t sz,
-                                                             RandomIt first, RandomIt last)
+        template <class RandomIt> page_calls_list_t(size_t sz,
+                                                    RandomIt first, RandomIt last)
         : sz_(sz)
         {
             for (; first != last; ++first)
@@ -41,17 +41,16 @@
                 map_it->second.push_back(sz_);
         }
 
-        unsigned call_list_pop_front(KeyT key) 
+	unsigned call_list_pop_front(KeyT key) 
         {
-            assert(!calls_map_.empty());
+            if (calls_map_.empty()) return sz_ + 1;
             auto cur_call = calls_map_.find(key);
-            assert(cur_call != calls_map_.end());
+	    if (cur_call == calls_map_.end()) return sz_ + 1;
 
             auto &call_list = cur_call->second;
-            assert(!call_list.empty());
+            if (call_list.empty()) return sz_ + 1;
 
             auto next_call_it  = call_list.begin();
-            assert(next_call_it != call_list.end());
             unsigned next_call = *next_call_it;
             call_list.erase(next_call_it); 
             return next_call;
@@ -83,6 +82,7 @@
         {
             auto hit = hash_.find(key);    
             unsigned next_call = calls.call_list_pop_front(key);      
+	    assert(next_call <= calls.size());
 
             if (hit == hash_.end())
             {   
@@ -110,7 +110,7 @@
         }
 
     public:
-        explicit perfect_cache_t(size_t sz, PageCallT slow_get_page) 
+        perfect_cache_t(size_t sz, PageCallT slow_get_page) 
         : sz_(sz), slow_get_page_(slow_get_page) {}
 
         int calculate_hits(page_calls_list_t<KeyT> &calls)
